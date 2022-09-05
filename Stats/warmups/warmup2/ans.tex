@@ -1,0 +1,85 @@
+\documentclass[a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{amsmath, amssymb, amsthm}
+
+\usepackage{setspace}
+\usepackage{tikz}
+
+\usetikzlibrary{automata, arrows, chains}
+\tikzset{
+	>=stealth, % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+	in place/.style={
+		auto=false,
+		inner sep=3pt,
+	},
+}
+
+
+
+\title{Warmup 2}
+\date{Sep 01, 2022}
+\author{Jack Ruder}
+
+
+\begin{document}
+
+\doublespacing
+\maketitle
+
+\section*{0.3}%
+\label{sec:0.3}
+\subsection*{a}%
+\label{sub:a}
+
+The observational units are the games observed.
+\\
+\noindent
+Quantitative variables include:
+\begin{itemize}
+	\item Time to complete the game
+	\item Number of runs scored
+	\item Margin of victory
+	\item Number of Pitchers used
+	\item Ballpark attendance at the game
+\end{itemize}
+\noindent
+Categorical variables include:
+\begin{itemize}
+	\item Which leauge teams are in
+\end{itemize}
+\noindent
+The response variable is the time it takes to complete the game.
+The rest of the variables are explanatory.
+
+\subsection*{b}
+The observational units are the putts.
+
+The quantitative explanatory variable is the length of the putt.
+The categorical response variable is whether or not he made the putt.
+
+\subsection*{c}
+
+Drew Brees' games are the observational units. Here, it is not clear what the response variable or explanatory variables are, since the students are just recording information. All of the variables are quantitative.
+
+\section*{0.15}
+\subsection*{a}%
+\label{sub:a}
+54 miles per hour.
+\subsection*{b}
+\label{sub:b}
+61.6 miles per hour.
+
+\subsection*{c}
+7.6 miles per hour.
+\begin{align*}
+	S &= 54 + 7.6 + \epsilon \\
+	W &= 54 + \epsilon \\
+	S - W &= 7.6 \\
+\end{align*}
+
+\end{document}
