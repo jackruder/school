@@ -13,5 +13,7 @@ riverData <- read.table("http://www.statsci.org/data/oz/nzrivers.txt", header=TR
 head(riverData)
 
 attach(iris)
+speciesNumber <- tapply(Sepal.Length, Species, length)
 meanSpeciesLengths <- tapply(Sepal.Length, Species, mean)
-meanSpeciesStdDev <- tapply(Sepal.Length, Species, sd)
+stdDevSpeciesLengths <- tapply(Sepal.Length, Species, sd)
+tbl <- round(cbind(speciesNumber, meanSpeciesLengths, stdDevSpeciesLengths),2)
