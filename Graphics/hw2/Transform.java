@@ -1,34 +1,98 @@
-import org.joml.Matrix4d
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
+import java.util.Scanner;
 
 public class Transform {
 	public static void main(String[] args) throws IllegalArgumentException {
-		Tx t = parse(args[0]);
-		System.out.println(t.toString());
+		Matrix4d matrix = new Matrix4d();
+		Scanner s = new Scanner(System.in);
+		boolean exit = false;
 
+		while (!exit) {//get user input until blank line
+			String input = s.nextLine(); 
+			if (input == "") {
+				exit = true;
+				break;
+			}
+			try {
+				matrix = stringTransform(input, matrix); // apply transformation, otherwise throw error on bad input
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				continue;
+			}
+		}
+		
+		System.out.println("The final transform matrix is:");
+		System.out.println(matrix.toString()); // Display 
+		
+		System.out.println("\nPlease enter 3D points to transform, and hit enter when done.");
+		exit = false;
 
+		while (!exit) {//get user input until blank line
+			String input = s.nextLine(); 
+			if (input == "") {
+				exit = true;
+				break;
+			}
+			Vector3d v;
+			try{
+				v = parsePoint(input).mulPosition(matrix);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+				continue;
+			}
+			System.out.print("\tTransformed: ");
+			System.out.println(v.toString());
+		}
 	}
 
 	/**
-	 * Returns a Tx object from a given string
+	 * Parse a string into a Vector3d object
 	 * 
+	 * @param s string to parse
+	 * @exception IllegalArgumentException if string cannot be parsed
+	 * @return Vector3d object
+	 * */
+	public static Vector3d parsePoint(String s) {
+		String[] sargs = s.split("\\s+");
+		if (sargs.length != 3) { //check length
+			throw new IllegalArgumentException("Could not parse point: expected 3 points, got " + Integer.toString(sargs.length));
+		}
+		else {
+			double[] args = new double[sargs.length];
+
+			try { // ensure all arguments after first are doubles 
+				for (int i = 0; i < args.length; i++) {
+					args[i] = Double.parseDouble(sargs[i]);
+				}
+			} catch(Exception e) {
+					throw new IllegalArgumentException("Could not parse point: non-numerical arguments");
+			}
+
+			return new Vector3d(args[0], args[1], args[2]);
+		}
+	}
+
+	/**
+	 * Applies a transformation to a Matrix4d object as described by a given string
+	 * 
+	 * @param  m matrix to modify
 	 * @param  s string to parse
 	 * @exception IllegalArgumentException if string cannot be parsed
-	 * @return tx object
+	 * @return modified matrix
 	 * */
-	public static Tx parse(String s) throws IllegalArgumentException {
+	public static Matrix4d stringTransform(String s, Matrix4d m) throws IllegalArgumentException {
 		String[] sargs = s.split("\\s+");
 
 		if (sargs.length < 2) { //too few arguments
 				throw new IllegalArgumentException("Could not parse transformation: no arguments provided");
 		}
 		double[] args = new double[sargs.length-1];
-
 		try { // ensure all arguments after first are doubles 
 			for (int i = 0; i < args.length; i++) {
 				args[i] = Double.parseDouble(sargs[i + 1]);
 			}
-
-		} catch(IllegalArgumentException e) {
+		} catch(Exception e) {
 				throw new IllegalArgumentException("Could not parse transformation: non-numerical arguments");
 		}
 
@@ -39,7 +103,7 @@ public class Transform {
 			// set invalid number of arguments to positive value if wrong number of args supplied
 			case "T":
 				if (args.length == 3) {
-					return new tTx(args[0], args[1], args[2]);
+					return m.translate(args[0],args[1],args[2]);
 				}
 				else {
 					invalid = 3;
@@ -47,17 +111,21 @@ public class Transform {
 				break;
 			case "S":
 				if (args.length == 1) {
-					return new sTx(args[0]);
+					return m.scale(args[0]);
 				}
 				else if (args.length == 3) {
-					return new s3Tx(args[0], args[1], args[2]);
+					return m.scale(args[0], args[1], args[2]);
 				}
 				else {
 		 			throw new IllegalArgumentException("Invalid number of arguments to \"S\": expected 1 or 3 arguments, got " + Integer.toString(args.length));
 				}
+
+			// Rotation syntax expects degrees, JOML requires radians
+			// Have to convert first
 			case "RX":
 				if (args.length == 1) {
-					return new rxTx(args[0]);	
+					double rad = java.lang.Math.toRadians(args[0]);
+					return m.rotateX(rad);
 				}
 				else {
 					invalid = 1;
@@ -66,7 +134,8 @@ public class Transform {
 
 			case "RY":
 				if (args.length == 1) {
-					return new ryTx(args[0]);
+					double rad = java.lang.Math.toRadians(args[0]);
+					return m.rotateY(rad);
 				}
 				else {
 					invalid = 1;
@@ -75,7 +144,8 @@ public class Transform {
 
 			case "RZ":
 				if (args.length == 1) {
-					return new rzTx(args[0]);
+					double rad = java.lang.Math.toRadians(args[0]);
+					return m.rotateZ(rad);
 				}
 				else {
 					invalid = 1;
@@ -83,8 +153,7 @@ public class Transform {
 				break;
 			case "L":
 				if (args.length == 6) {
-					return new lTx(args[0], args[1], args[2], args[3], args[4], args[5]);
-				}
+					return m.lookAlong(args[0], args[1], args[2], args[3], args[4], args[5]);				}
 				else {
 					invalid = 6;
 				}
@@ -92,7 +161,7 @@ public class Transform {
 			case "O":
 
 				if (args.length == 4) {
-					return new oTx(args[0], args[1], args[2], args[3]);
+					return m.orthoSymmetric(args[0], args[1], args[2], args[3]);
 				}
 				else {
 					invalid = 4;
@@ -100,7 +169,7 @@ public class Transform {
 				break;
 			case "P":
 				if (args.length == 4) {
-					return new pTx(args[0], args[1], args[2], args[3]);
+					return m.perspective(args[0], args[1], args[2], args[3]);
 				}
 				else {
 					invalid = 4;
@@ -111,216 +180,5 @@ public class Transform {
 		}
 		// if we got here then the command was correctly entered with the wrong number of args
 	 	throw new IllegalArgumentException("Invalid number of arguments to " + sargs[0] + ": expected " + Integer.toString(invalid) + " arguments, got " + Integer.toString(args.length));
-	}
-}
-
-
-
-
-interface Tx {
-	/**
-	 * internal matrix representation
-	 * */
-	Matrix4d matrix;
-
-	/** 
-	 * double dispatch accept method
-	 * */
-	public void accept(txVisitor v);
-	
-	/**
-	 * Return the string representation of the transformation, in 
-	 * the same format it may be parsed from
-	 *
-	 * @return the string representation
-	 * */
-	public String toString();
-}
-
-
-
-interface txVisitor {
-	public void visit(tTx tx); 
-	public void visit(sTx tx); 
-	public void visit(s3Tx tx);
-	public void visit(rxTx tx);
-	public void visit(ryTx tx);
-	public void visit(rzTx tx);
-	public void visit(lTx tx) ;
-	public void visit(oTx tx) ;
-	public void visit(pTx tx) ;
-}
-
-class tTx implements Tx{
-	double dx;
-	double dy;
-	double dz;
-
-	tTx(double dx, double dy, double dz) {
-		this.dx = dx;
-		this.dy = dy;
-		this.dz = dz;
-		this.matrix = new Matrix4d();
-		matrix
-	}
-
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-
-	@Override
-	public String toString() {
-		return "T " + Double.toString(this.dx) + " " + Double.toString(this.dy) + " " + Double.toString(this.dz);
-	}
-}
-class sTx implements Tx{
-	double s;
-
-	sTx(double s) {
-		this.s = s;
-	}
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-	@Override
-	public String toString() {
-		return "S " + Double.toString(this.s);
-	}
-}
-class s3Tx implements Tx{
-	double sx;
-	double sy;
-	double sz;
-
-	s3Tx(double sx, double sy, double sz) {
-		this.sx = sx;
-		this.sy = sy;
-		this.sz = sz;
-	}
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-	@Override
-	public String toString() {
-		return  "S " + Double.toString(this.sx) + " " +  Double.toString(this.sy) + " " + Double.toString(this.sz);
-	}
-}
-
-class rxTx implements Tx{
-	double theta;
-
-	rxTx(double theta) {
-		this.theta = theta;
-	}
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-	@Override
-	public String toString() {
-		return  "RX " + Double.toString(this.theta);
-	}
-}
-class ryTx implements Tx{
-	double theta;
-
-	ryTx(double theta) {
-		this.theta = theta;
-	}
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-	@Override
-	public String toString() {
-		return  "RY " + Double.toString(this.theta);
-	}
-}
-class rzTx implements Tx{
-	double theta;
-
-	rzTx(double theta) {
-		this.theta = theta;
-	}
-
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-	@Override
-	public String toString() {
-		return "RZ " + Double.toString(this.theta);
-	}
-}
-class lTx implements Tx {
-	double cx;
-	double cy;
-	double cz;
-	double tx;
-	double ty;
-	double tz;
-
-	lTx(double cx, double cy, double cz, double tx, double ty, double tz) {
-		this.cx = cx;
-		this.cy = cy;
-		this.cz = cz;
-		this.tx = tx;
-		this.ty = ty;
-		this.tz = tz;
-	}
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-	@Override
-	public String toString() {
-		return "L " + Double.toString(this.cx) + " " + Double.toString(this.cy) + " " + Double.toString(this.cz) + " " + Double.toString(this.tx) + " " + Double.toString(this.ty) + " " + Double.toString(this.tz);
-	}
-}
-class oTx implements Tx{
-	double w;
-	double h;
-	double dn;
-	double df;
-
-	oTx(double w, double h, double dn, double df) {
-		this.w = w;
-		this.h = h;
-		this.dn = dn;
-		this.df = df;
-	}
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-	@Override
-	public String toString() {
-		return "O " + Double.toString(this.w) + " " + Double.toString(this.h) + " " + Double.toString(this.dn) + " " + Double.toString(this.df);
-	}
-}
-class pTx implements Tx{
-	double p;
-	double a;
-	double dn;
-	double df;
-
-	pTx(double p, double a, double dn, double df) {
-		this.p = p;
-		this.a = a;
-		this.dn = dn;
-		this.df = df;
-	}
-
-	@Override
-	public void accept(txVisitor v) {
-		v.visit(this);
-	}
-
-	@Override
-	public String toString() {
-		return "P " + Double.toString(this.p) + " " + Double.toString(this.a) + " " + Double.toString(this.dn) + " " + Double.toString(this.df);
 	}
 }
