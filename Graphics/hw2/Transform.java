@@ -1,3 +1,5 @@
+import org.joml.Matrix4d
+
 public class Transform {
 	public static void main(String[] args) throws IllegalArgumentException {
 		Tx t = parse(args[0]);
@@ -116,6 +118,11 @@ public class Transform {
 
 
 interface Tx {
+	/**
+	 * internal matrix representation
+	 * */
+	Matrix4d matrix;
+
 	/** 
 	 * double dispatch accept method
 	 * */
@@ -153,6 +160,8 @@ class tTx implements Tx{
 		this.dx = dx;
 		this.dy = dy;
 		this.dz = dz;
+		this.matrix = new Matrix4d();
+		matrix
 	}
 
 	@Override
