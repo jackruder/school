@@ -9,7 +9,7 @@ lattice::densityplot(LENGTH)
 # Doesn't seem skewed
 
 lattice::densityplot(WEIGHT)
-#this is definitely skewed left
+#this is definitely skewed right 
 
 plot(log(WEIGHT) ~ LENGTH, data=bears)
 #definitely looks linear, lets try a fit
@@ -35,7 +35,7 @@ lattice::densityplot(LENGTH)
 # Doesn't seem skewed (again)
 
 lattice::densityplot(AGE)
-#this is definitely skewed left (again)
+#this is definitely skewed right (again)
 
 plot(LENGTH ~ log(AGE), data=bears)
 #definitely looks linear, lets try a fit
