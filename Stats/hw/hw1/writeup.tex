@@ -1,0 +1,84 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{amsmath, amssymb, amsthm}
+
+\usepackage{setspace}
+\usepackage{tikz}
+
+\usetikzlibrary{automata, arrows, chains}
+\tikzset{
+	>=stealth, % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+	in place/.style={
+		auto=false,
+		inner sep=3pt,
+	},
+}
+
+% figure support
+\usepackage{import}
+\usepackage{xifthen}
+\pdfminorversion=7
+\usepackage{pdfpages}
+\usepackage{transparent}
+\newcommand{\incfig}[1]{%
+	\def\svgwidth{\columnwidth}
+	\import{./figures/}{#1.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\title{HW: Introduction to R and Statistical Thinking}
+\date{Sep 06, 2022}
+\author{Jack Ruder}
+
+
+\begin{document}
+
+\doublespacing
+\maketitle
+
+\section*{1}
+\begin{verbatim}
+> head(trees,6)
+  Girth Height Volume
+1   8.3     70   10.3
+2   8.6     65   10.3
+3   8.8     63   10.2
+4  10.5     72   16.4
+5  10.7     81   18.8
+6  10.8     83   19.7
+\end{verbatim}
+
+\section*{3}
+The sample mean of timber yielded from the trees is approximately 30.17 cubic feet.
+\subsection*{a}
+The response variable is the blood pressure of the participants (systolic and diastolic). The explanatory variable is whether the participants were given white chocolate or dark chocolate.
+\subsection*{b}
+This study is an experiment, researchers split a group into two and controlled (to some extent) what participants ate in order to observe an effect.
+\subsection*{c}
+The high-blood-pressure participants are the sample, the population is people whose blood pressure is around (loosely, no data is provided here) 153/84.
+\subsection*{d}
+The aim of the model was to evaluate a treatment.
+\subsection*{e}
+Let \(S\), \(D\) be systolic and diastolic pressures respectively. Let \(C = 0\) represent eating white chocolate, and let \(C = 1\) represent eating dark chocolate.
+The form of the model is thus 
+\begin{align*}
+	S_{end} &= S_{initial} - C \cdot (\mu_S + \epsilon) \sim f_S(\mu_S) \\
+	D_{end} &= D_{initial} - C \cdot (\mu_D + \epsilon) \sim f_D(\mu_D) \\
+\end{align*}
+where \(f_S\) and \(f_D\) are unknown distributions of the decreases in blood pressure, distributed with mean \(\mu_i\). 
+\subsection*{f}
+The given data is \(S_{initial} = 153\), \(\mu_S = 5\), \(D_{initial} = 84\), \(\mu_S = 2\). Without any more datapoints it would be incorrect to pick a particular distribution of data, there is not enough information here. For this particular experimint, we have 
+\begin{align*}
+	S_{end} &= 153- C \cdot f_S(5), \\
+	D_{end} &= 84 - C \cdot f_D(2). \\
+\end{align*}
+\subsection*{g}
+Again, there is too little information about the statistical significance of the results. But, if the result was statistically significant then causation could be esdablished because this was a controlled experiment.
+\end{document}
