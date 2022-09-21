@@ -25,7 +25,7 @@ plot(isoT$delta18O, isoT$temperature)
 # There is a clear outlier, although it is hard to determine that it is a bad datapoint since it is within the range of data. 
 
 subset(isoT, X==82) # the outlier, at y=-5.4 degrees.
-# in the temperature_corrected column, there is an entry of -55.4,
+# in the temperature_corrected column, there is an entry of -55.4,rEV5TX5kRSjA﻿
 # it appears that the user forgot to type a 5.
 
 # We confirm this,
@@ -74,21 +74,33 @@ hist(y, breaks=20)
 hist(x, breaks=20)
 # it seems that there are higher frequencies of datapoints at the extremes, we can try some transformations, possibly a square root transform
 
-hist(log(-1/y), breaks=20)
-hist(1/x, breaks=20)
+hist(sqrt(-y), breaks=20) # we see extremes here still at the edge, but this looks mostly uniform.
+hist(log(-y), breaks=20) # a log transform looks worse.
+hist(1/y, breaks=20) # now we have consistent concave up, maybe now a transform?
+hist(log(-1/y), breaks=20) # this does not seem any better than sqrt(-y), and given the added complexity of the transformation it seems not worth it.
+
+
+
+hist(sqrt(-x), breaks=20) # this data is still bimodal.
+hist(log(-x), breaks=20) # a log transform looks worse, again.
+hist(1/x, breaks=20) # now we have consistent concave up, maybe now a transform?
+hist(log(-1/x), breaks=20) # this seems worse again.
+# it seems no transformation of x is fully satisfactory. We will try square roots since the best transformations came from those
 
 ######### try square root transforms data as is############
-plot.lm(sqrt(-x), sqrt(-y), xlab="sqrt(-delta18O)", ylab="sqrt(-ylab)")
+plot.lm(-sqrt(-x), -sqrt(-y), xlab="sqrt(-delta18O)", ylab="sqrt(-ylab)")
 
 #diagnostic plots
 # We see that the data here is centered around 0, however there appears to be 
 # a pattern in the residuals for lower values, with increased spread. The residuals look less normal and more skewed.
 ############### not too helpful. clearly, this plot is no better ###############
-plot.lm(sqrt(-x), sqrt(-y), xlab="sqrt(-delta18O)", ylab="sqrt(-ylab)")
 
 
-plot.lm(sqrt(1/-x), sqrt(1/-y), xlab="sqrt(-delta18O)", ylab="sqrt(-ylab)")
 
+plot.lm(x, -sqrt(-y), xlab="sqrt(-delta18O)", ylab="sqrt(-ylab)")
+# This was even worse. 
+
+##### The bimodal nature of the data is responsible for the difficulty in transformation. Last idea to obtain a normal distribution is boxcox, although it will obfuscate meaning####
 
 px <- -x
 py <- -y
