@@ -1,4 +1,4 @@
-##########################f
+##########################
 # Author: Jack Ruder
 # Date: September 18, 2022 
 # Polar Pre Lab
@@ -45,8 +45,8 @@ plot.lm <- function(x, y, xlab, ylab) {
 	summary(model)
 
 	#diagnostic plots
-	plot(model$fitted, model$resid)
-	hist(model$resid)
+	plot(model$fitted, model$resid, xlab="Fitted Values", ylab="Residuals")
+	hist(model$resid, xlab="Residuals")
 	# Slight left skew in the residuals
 	qqnorm(model$resid)
 	qqline(model$resid)
@@ -57,9 +57,10 @@ plot.lm <- function(x, y, xlab, ylab) {
 ######### fit data as is############
 x <- isoT$delta18O
 y <- isoT$temperature
-
+slr <- lm(temperature~delta18O, data=isoT)
 # scatter plot with fitted line
-plot.lm(x,y,"delta18O", "temperature")
+plot.lm(x,y,"delta18O", "temperature") 
+x11() #keep plot open
 
 #diagnostic plots
 
@@ -70,8 +71,9 @@ plot.lm(x,y,"delta18O", "temperature")
 
 #QQ plot here has long tails on the edges. This data should need a transformation
 
-hist(y, breaks=20)
-hist(x, breaks=20)
+par(mfrow=c(1,2))
+hist(y, breaks=20, main="Histogram of Temperature Values", xlab="Temperature")
+hist(x, breaks=20, main="Histogram of delta18O Values", xlab="delta18O")
 # it seems that there are higher frequencies of datapoints at the extremes, we can try some transformations, possibly a square root transform
 
 hist(sqrt(-y), breaks=20) # we see extremes here still at the edge, but this looks mostly uniform.
@@ -97,10 +99,8 @@ plot.lm(-sqrt(-x), -sqrt(-y), xlab="sqrt(-delta18O)", ylab="sqrt(-ylab)")
 
 
 
-plot.lm(x, -sqrt(-y), xlab="sqrt(-delta18O)", ylab="sqrt(-ylab)")
-# This was even worse. 
 
-##### The bimodal nature of the data is responsible for the difficulty in transformation. Last idea to obtain a normal distribution is boxcox, although it will obfuscate meaning####
+##### The bimodal nature of the data is responsible for the difficulty in transformation. Last idea to obtain a normal distribution is boxcox, although it will obfuscate meaning.####
 
 px <- -x
 py <- -y
@@ -121,13 +121,8 @@ hist(bcmodel$resid)
 # Slight left skew in the residuals
 qqnorm(bcmodel$resid)
 qqline(bcmodel$resid)
-#QQ plot here has long tails on the edges. This data should need a transformation
+# This is the best fit, but we have a loss of understanding here.
 
-
-
-
-
-
-
-
+iceCore$predictedTemp <- predict(slr, data.frame(delta18O=iceCore$d18O))
+plot(iceCore$Age_decimal, iceCore$predictedTemp, xlab="Age", ylab="Predicted Temperature")
 

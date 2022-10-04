@@ -1,0 +1,37 @@
+\documentclass[a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{amsmath, amssymb, amsthm}
+
+\usepackage{setspace}
+% figure support
+\usepackage{import}
+\usepackage{xifthen}
+\usepackage{pdfpages}
+\usepackage{transparent}
+
+\title{Nuclear Lab Report}
+\date{date}
+\author{Jack Ruder and Tatum Bunnett}
+
+
+\begin{document}
+
+\doublespacing
+\maketitle
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\textwidth]{"../originalData.png"}
+	\caption{Linear fit on non-transformed data}
+	\label{fig:ogdat}
+\end{figure}
+
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=\textwidth]{"../sqrtExposreXmortality.png"}
+	\caption{Linear fit on transformed data}
+	\label{fig:sqdat}
+\end{figure}
+\end{document}
