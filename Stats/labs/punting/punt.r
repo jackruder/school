@@ -48,6 +48,13 @@ plot.lm <- function(x, y, xlab, ylab) {
 	qqline(model$resid)
 }
 
+plotdensity  <- function(x, df, title) {
+	png(paste(title,"png",sep="."))	
+	lattice::xyplot(~x, data=df, label=title)
+	dev.off()
+}
+
+plotdensity(L_Strength, df, "Density Plot of L_Strength")
 
 m <- lm(Distance~L_Strength*R_Strength + R_Flexibility*R_Strength + L_Flexibility*L_Strength, data=df)
 # adjusted r squared of 0.943, not a terrible overfit
