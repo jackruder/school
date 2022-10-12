@@ -24,7 +24,7 @@ SEP <- "/" # posix
 
 DATAFILE <- paste(DATADIR, FILENAME, sep=SEP)
 df <- read.table(DATAFILE,header=TRUE)
-attach(df)
+#attach(df)
 
 library(ggplot2)
 ggplot(df, aes(x=R_Strength, y=O_Strength)) +
@@ -48,13 +48,65 @@ plot.lm <- function(x, y, xlab, ylab) {
 	qqline(model$resid)
 }
 
-plotdensity  <- function(x, title) {
-	png(filename=paste(title,"png",sep="."))	
-	lattice::densityplot(~x, title=title)
-	dev.off()
+plotdensity  <- function(col, data, colName) {
+	pname <-paste("Density Plot of",colName,sep=" ")
+	lattice::densityplot(~col, data=data, main=pname, xlab=colName)
 }
 
-plotdensity(df$L_Strength, title="Density Plot of L_Strength")
+RES_X <- 1080
+RES_Y <- 1080
+
+colname <- "Left Leg Strength"
+x <- L_Strength
+fname <- gsub(" ", "_", colname)
+png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
+plotdensity(x, df, colname)
+dev.off()
+
+colname <- "Right Leg Strength"
+x <- R_Strength
+fname <- gsub(" ", "_", colname)
+png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
+plotdensity(x, df, colname)
+dev.off()
+
+colname <- "Overall Leg Strength"
+x <- O_Strength
+fname <- gsub(" ", "_", colname)
+png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
+plotdensity(x, df, colname)
+dev.off()
+
+colname <- "Left Leg Flexibility"
+x <- L_Flexibility
+fname <- gsub(" ", "_", colname)
+png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
+plotdensity(x, df, colname)
+dev.off()
+
+colname <- "Right Leg Flexibility"
+x <- R_Flexibility
+fname <- gsub(" ", "_", colname)
+png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
+plotdensity(x, df, colname)
+dev.off()
+
+colname <- "Distance"
+x <- Distance
+fname <- gsub(" ", "_", colname)
+png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
+plotdensity(x, df, colname)
+dev.off()
+
+colname <- "Hang Time"
+x <- Hang
+fname <- gsub(" ", "_", colname)
+png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
+plotdensity(x, df, colname)
+dev.off()
+
+
+#observe that all of the variables appear to be fairly normally distributed, no obvious tronsformations are necessary
 
 m <- lm(Distance~L_Strength + R_Strength + R_Flexibility +  O_Strength, data=df)
 # adjusted r squared of 0.943, not a terrible overfit
