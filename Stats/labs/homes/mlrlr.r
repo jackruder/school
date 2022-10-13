@@ -9,12 +9,38 @@ SEP <- "/" # posix
 
 DATAFILE <- paste(DATADIR, FILENAME, sep=SEP)
 df <- read.csv(DATAFILE)
-#attach(df)
 
-library(ggplot2)
-ggplot(df, aes(x=R_Strength, y=O_Strength)) +
-	geom_point(size=3) 
+#convert YYYYMMDD to years since 2014
+parseDate <- function(x) {
+	yr <- strtoi(substr(x, 1,4), base=10L)
+	month <- strtoi(substr(x, 5,6), base=10L)
+	d <- strtoi(substr(x, 7,8), base=10L)
+	return (yr - 2014 + (month / 12.0) + (d/365.0))
+}
 
+notZero <- function(x){ # 0 if 0, 1 if not zero
+	return (ifelse(x==0,0,1))
+}
+
+incZero <- function(x, e) { # add a tiny value of e to only zero values
+	return (ifelse(x==0,e,x))
+}
+
+df$date <- parseDate(df$date) ## make date numeric
+names(df)[names(df)=="date"] <- "daten"
+df$hasView <- notZero(df$view) # create binary indicator of whether or not a view is present
+df$isRenovated <- notZero(df$yr_renovated)
+df$age <- df$daten + 2014 - df$yr_built
+df$ageRenovated <- df$daten + 2014 - df$yr_renovated
+
+logDf <- sapply(df, log) # log all data
+colnames(logDf) <- paste0(colnames(df), "_log")
+
+ihs <- function(x) log(x + sqrt(1 + x^2))
+ihsDf <- sapply(df, ihs) # ihs all data
+colnames(ihsDf) <- paste0(colnames(df), "_ihs")
+
+df <- cbind(df,logDf,ihsDf) # combine into one dataframe
 
 
 
@@ -29,7 +55,7 @@ plot.lm <- function(x, y, xlab, ylab) {
 	plot(model$fitted, model$resid, xlab="Fitted Values", ylab="Residuals")
 	hist(model$resid, xlab="Residuals", main="Residual Distribution")
 	# Slight left skew in the residuals
-	qqnorm(model$resid)
+	qqnorm(model$reqid)
 	qqline(model$resid)
 }
 
@@ -41,51 +67,4 @@ plotdensity  <- function(col, data, colName) {
 RES_X <- 1080
 RES_Y <- 1080
 
-colname <- "Left Leg Strength"
-x <- L_Strength
-fname <- gsub(" ", "_", colname)
-png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
-plotdensity(x, df, colname)
-dev.off()
-
-colname <- "Right Leg Strength"
-x <- R_Strength
-fname <- gsub(" ", "_", colname)
-png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
-plotdensity(x, df, colname)
-dev.off()
-
-colname <- "Overall Leg Strength"
-x <- O_Strength
-fname <- gsub(" ", "_", colname)
-png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
-plotdensity(x, df, colname)
-dev.off()
-
-colname <- "Left Leg Flexibility"
-x <- L_Flexibility
-fname <- gsub(" ", "_", colname)
-png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
-plotdensity(x, df, colname)
-dev.off()
-
-colname <- "Right Leg Flexibility"
-x <- R_Flexibility
-fname <- gsub(" ", "_", colname)
-png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
-plotdensity(x, df, colname)
-dev.off()
-
-colname <- "Distance"
-x <- Distance
-fname <- gsub(" ", "_", colname)
-png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
-plotdensity(x, df, colname)
-dev.off()
-
-colname <- "Hang Time"
-x <- Hang
-fname <- gsub(" ", "_", colname)
-png(paste(fname,"png",sep="."), width=RES_X, height=RES_Y)
-plotdensity(x, df, colname)
-dev.off()
+mod <- lm(price_log ~ bedrooms_ihs * bathrooms_ihs * sqft_living_log * sqft_lot_log * (floors_log + sqft_above + sqft_basement + (condition*grade)) * (waterfront + hasView + view) * (daten + age + isRenovated + ageRenovated) * (lat + long) * (sqft_living15_log * sqft_lot15_log), data=df)
