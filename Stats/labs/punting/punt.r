@@ -1,5 +1,5 @@
 ################
-# Author: Jack Ruder
+# Author: Jack Ruder and Tatum Bunnett
 # Date: Oct 06, 2022
 # Multiple Linear Regression Lab: Punting
 ###############################
@@ -127,12 +127,18 @@ df <- cbind(df, right_footed=apply(df,1,rfooted))
 m6 <- lm(Distance~I(right_footed * R_Strength) + I((1 - right_footed) * L_Strength) + O_Strength, data=df)
 summary(m6)
 anova(m6)
-hist(m6$resid, breaks=8) # appears to be more normal.
+png("modelnormcheck.png",width=1440,height=480)
+par(mfrow=c(1,3))
+hist(m6$resid, breaks=8, main="Model Residuals", xlab="Residual") # appears to be more normal.
 qqnorm(m6$resid) # same deal
 qqline(m6$resid)
-plot(m6$resid~m6$fitted) 
+plot(m6$resid~m6$fitted, xlab="Model Fitted Value", ylab="Residual", main="Fitted Values vs Residuals") 
+dev.off()
 
 anova(m4,m6)
+
+m7 <- lm(Distance~I(right_footed * R_Strength) + I((1 - right_footed) * L_Strength) + O_Strength+ R_Flexibility, data=df)
+summary(m7)
 
 avgKicker <- mean(df$Distance)
 sdDist <- sd(df$Distance)
