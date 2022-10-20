@@ -1,0 +1,14 @@
+1.
+I believe all of these variables affect sale price, although
+I expect a large amount of collinearity to be present in
+some of the variables (i.e. zipcode, latitude, longitude). 
+
+Some of the variables of course will be less useful than 
+others, but there really aren't any here that stand out as
+not important.
+
+2. 
+This model would be useful to homebuyers, in knowing if 
+a home is appropriately priced. This model would also be
+useful for rennovators/builders, to know where to put in
+effort to maximize value.
