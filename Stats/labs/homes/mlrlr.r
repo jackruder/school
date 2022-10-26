@@ -1,46 +1,46 @@
 ################
-# Author: Jack Ruder
-# Date: Oct 06, 2022
-# Multiple Linear Regression Lab report III
+# author: jack ruder
+# date: oct 06, 2022
+# multiple linear regression lab report iii
 ###############################
-DATADIR <- "~/School/Stats/data"
-FILENAME <- "kc_house_data.csv"
-SEP <- "/" # posix
+datadir <- "~/School/Stats/data"
+filename <- "kc_house_data.csv"
+sep <- "/" # posix
 
-DATAFILE <- paste(DATADIR, FILENAME, sep=SEP)
-df <- read.csv(DATAFILE)
+datafile <- paste(datadir, filename, sep=sep)
+df <- read.csv(datafile)
 
-#convert YYYYMMDD to years since 2014
-parseDate <- function(x) {
+#convert yyyymmdd to years since 2014
+parsedate <- function(x) {
 	yr <- strtoi(substr(x, 1,4), base=10L)
 	month <- strtoi(substr(x, 5,6), base=10L)
 	d <- strtoi(substr(x, 7,8), base=10L)
 	return (yr - 2014 + (month / 12.0) + (d/365.0))
 }
 
-notZero <- function(x){ # 0 if 0, 1 if not zero
+notzero <- function(x){ # 0 if 0, 1 if not zero
 	return (ifelse(x==0,0,1))
 }
 
-incZero <- function(x, e) { # add a tiny value of e to only zero values
+inczero <- function(x, e) { # add a tiny value of e to only zero values
 	return (ifelse(x==0,e,x))
 }
 
-df$date <- parseDate(df$date) ## make date numeric
+df$date <- parsedate(df$date) ## make date numeric
 names(df)[names(df)=="date"] <- "daten"
-df$hasView <- notZero(df$view) # create binary indicator of whether or not a view is present
-df$isRenovated <- notZero(df$yr_renovated)
+df$hasView <- notzero(df$view) # create binary indicator of whether or not a view is present
+df$isRenovated <- notzero(df$yr_renovated)
 df$age <- df$daten + 2014 - df$yr_built
 df$ageRenovated <- df$daten + 2014 - df$yr_renovated
 
-logDf <- sapply(df, log) # log all data
-colnames(logDf) <- paste0(colnames(df), "_log")
+logdf <- sapply(df, log) # log all data
+colnames(logdf) <- paste0(colnames(df), "_log")
 
 ihs <- function(x) log(x + sqrt(1 + x^2))
-ihsDf <- sapply(df, ihs) # ihs all data
-colnames(ihsDf) <- paste0(colnames(df), "_ihs")
+ihsdf <- sapply(df, ihs) # ihs all data
+colnames(ihsdf) <- paste0(colnames(df), "_ihs")
 
-df <- cbind(df,logDf,ihsDf) # combine into one dataframe
+df <- cbind(df,logdf,ihsdf) # combine into one dataframe
 
 
 
@@ -52,19 +52,422 @@ plot.lm <- function(x, y, xlab, ylab) {
 	summary(model)
 
 	#diagnostic plots
-	plot(model$fitted, model$resid, xlab="Fitted Values", ylab="Residuals")
-	hist(model$resid, xlab="Residuals", main="Residual Distribution")
-	# Slight left skew in the residuals
+	plot(model$fitted, model$resid, xlab="fitted values", ylab="residuals")
+	hist(model$resid, xlab="residuals", main="residual distribution")
+	# slight left skew in the residuals
 	qqnorm(model$reqid)
 	qqline(model$resid)
 }
 
-plotdensity  <- function(col, data, colName) {
-	pname <-paste("Density Plot of",colName,sep=" ")
-	lattice::densityplot(~col, data=data, main=pname, xlab=colName)
+plotdensity  <- function(col, data, colname) {
+	pname <-paste("density plot of",colname,sep=" ")
+mod2 <- lm(price_log ~ bedrooms_ihs * bathrooms_ihs * sqft_living_log * sqft_lot_log * (floors_log + sqft_above + sqft_basement + (condition*grade) + (waterfront * hasView * view) + (daten * age * isRenovated * ageRenovated) + (lat + long) + (sqft_living15_log * sqft_lot15_log)), na.action=na.exclude, data=df)
+	lattice::densityplot(~col, data=data, main=pname, xlab=colname)
 }
 
-RES_X <- 1080
-RES_Y <- 1080
+res_x <- 1080
+res_y <- 1080
 
-mod <- lm(price_log ~ bedrooms_ihs * bathrooms_ihs * sqft_living_log * sqft_lot_log * (floors_log + sqft_above + sqft_basement + (condition*grade)) * (waterfront + hasView + view) * (daten + age + isRenovated + ageRenovated) * (lat + long) * (sqft_living15_log * sqft_lot15_log), data=df)
+mod <- lm(price_log ~ bedrooms_ihs * bathrooms_ihs * sqft_living_log * sqft_lot_log * (floors_log + sqft_above + sqft_basement + (condition*grade) + (waterfront * hasView * view) + (daten * age * isRenovated * ageRenovated) + (lat + long) + (sqft_living15_log * sqft_lot15_log)), na.action=na.exclude, data=df)
+
+mod2 <- lm(price_log ~
+bedrooms_ihs                                                                +
+bathrooms_ihs                                                               +
+sqft_living_log                                                             +
+sqft_lot_log                                                                +
+floors_log                                                                  +
+sqft_above                                                                  +
+sqft_basement                                                               +
+condition                                                                   +
+grade                                                                       +
+waterfront                                                                  +
+hasView                                                                     +
+view                                                                        +
+daten                                                                       +
+age                                                                         +
+isRenovated                                                                 +
+ageRenovated                                                                +
+lat                                                                         +
+long                                                                        +
+sqft_living15_log                                                           +
+sqft_lot15_log                                                              +
+bedrooms_ihs:bathrooms_ihs                                                  +
+bathrooms_ihs:sqft_living_log                                               +
+bedrooms_ihs:sqft_lot_log                                                   +
+condition:grade                                                             +
+daten:age                                                                   +
+daten:isRenovated                                                           +
+age:isRenovated                                                             +
+sqft_living15_log                                                           +
+sqft_lot15_log                                                              +
+bedrooms_ihs:floors_log                                                     +
+bedrooms_ihs:sqft_above                                                     +
+bedrooms_ihs:sqft_basement                                                  +
+bedrooms_ihs:hasView                                                        +
+bedrooms_ihs:age                                                            +
+bedrooms_ihs:long                                                           +
+bedrooms_ihs:sqft_living15_log                                              +
+bathrooms_ihs:floors_log                                                    +
+bathrooms_ihs:condition                                                     +
+bathrooms_ihs:hasView                                                       +
+bathrooms_ihs:age                                                           +
+bathrooms_ihs:isRenovated                                                   +
+bathrooms_ihs:lat                                                           +
+bathrooms_ihs:long                                                          +
+bathrooms_ihs:sqft_living15_log                                             +
+bathrooms_ihs:sqft_lot15_log                                                +
+sqft_living_log:sqft_basement                                               +
+sqft_living_log:grade                                                       +
+sqft_living_log:isRenovated                                                 +
+sqft_living_log:lat                                                         +
+sqft_living_log:long                                                        +
+sqft_lot_log:floors_log                                                     +
+sqft_lot_log:sqft_above                                                     +
+sqft_lot_log:sqft_basement                                                  +
+sqft_lot_log:condition                                                      +
+sqft_lot_log:grade                                                          +
+sqft_lot_log:waterfront                                                     +
+sqft_lot_log:hasView                                                        +
+sqft_lot_log:age                                                            +
+sqft_lot_log:isRenovated                                                    +
+sqft_lot_log:lat                                                            +
+sqft_lot_log:long                                                           +
+sqft_lot_log:sqft_lot15_log                                                 +
+bedrooms_ihs:sqft_living_log:sqft_lot_log                                   +
+bathrooms_ihs:sqft_living_log:sqft_lot_log                                  +
+daten:age:ageRenovated                                                      +
+daten:isRenovated:ageRenovated                                              +
+bedrooms_ihs:condition:grade                                                +
+bedrooms_ihs:daten:age                                                      +
+bedrooms_ihs:sqft_living15_log:sqft_lot15_log                               +
+bathrooms_ihs:daten:isRenovated                                             +
+bathrooms_ihs:sqft_living15_log:sqft_lot15_log                              +
+bedrooms_ihs:bathrooms_ihs:condition                                        +
+bedrooms_ihs:bathrooms_ihs:age                                              +
+bedrooms_ihs:bathrooms_ihs:lat                                              +
+bedrooms_ihs:bathrooms_ihs:long                                             +
+bedrooms_ihs:sqft_living_log:floors_log                                     +
+bedrooms_ihs:sqft_living_log:sqft_above                                     +
+bedrooms_ihs:sqft_living_log:condition                                      +
+bedrooms_ihs:sqft_living_log:long                                           +
+bathrooms_ihs:sqft_living_log:floors_log                                    +
+bathrooms_ihs:sqft_living_log:sqft_basement                                 +
+bathrooms_ihs:sqft_living_log:grade                                         +
+bathrooms_ihs:sqft_living_log:view                                          +
+bathrooms_ihs:sqft_living_log:daten                                         +
+bathrooms_ihs:sqft_living_log:age                                           +
+bathrooms_ihs:sqft_living_log:ageRenovated                                  +
+bathrooms_ihs:sqft_living_log:long                                          +
+bathrooms_ihs:sqft_living_log:sqft_living15_log                             +
+bathrooms_ihs:sqft_living_log:sqft_lot15_log                                +
+sqft_lot_log:condition:grade                                                +
+sqft_lot_log:daten:isRenovated                                              +
+sqft_lot_log:daten:ageRenovated                                             +
+sqft_lot_log:age:ageRenovated                                               +
+sqft_lot_log:sqft_living15_log:sqft_lot15_log                               +
+bedrooms_ihs:sqft_lot_log:floors_log                                        +
+bedrooms_ihs:sqft_lot_log:sqft_above                                        +
+bedrooms_ihs:sqft_lot_log:condition                                         +
+bedrooms_ihs:sqft_lot_log:waterfront                                        +
+bedrooms_ihs:sqft_lot_log:age                                               +
+bathrooms_ihs:sqft_lot_log:sqft_basement                                    +
+bathrooms_ihs:sqft_lot_log:grade                                            +
+bathrooms_ihs:sqft_lot_log:view                                             +
+bathrooms_ihs:sqft_lot_log:age                                              +
+bathrooms_ihs:sqft_lot_log:isRenovated                                      +
+bathrooms_ihs:sqft_lot_log:lat                                              +
+bathrooms_ihs:sqft_lot_log:long                                             +
+sqft_living_log:sqft_lot_log:floors_log                                     +
+sqft_living_log:sqft_lot_log:sqft_basement                                  +
+sqft_living_log:sqft_lot_log:condition                                      +
+sqft_living_log:sqft_lot_log:isRenovated                                    +
+sqft_living_log:sqft_lot_log:lat                                            +
+sqft_living_log:sqft_lot_log:sqft_lot15_log                                 +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log                     +
+daten:age:isRenovated:ageRenovated                                          +
+bedrooms_ihs:bathrooms_ihs:condition:grade                                  +
+bedrooms_ihs:bathrooms_ihs:daten:age                                        +
+bedrooms_ihs:bathrooms_ihs:age:isRenovated                                  +
+sqft_living_log:daten:age:isRenovated                                       +
+bedrooms_ihs:sqft_living_log:condition:grade                                +
+bedrooms_ihs:sqft_living_log:waterfront:view                                +
+bathrooms_ihs:sqft_living_log:condition:grade                               +
+bathrooms_ihs:sqft_living_log:age:isRenovated                               +
+bathrooms_ihs:sqft_living_log:daten:ageRenovated                            +
+bathrooms_ihs:sqft_living_log:sqft_living15_log:sqft_lot15_log              +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_above                       +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:waterfront                       +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:long                             +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_living15_log                +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot15_log                   +
+bedrooms_ihs:sqft_lot_log:sqft_living15_log:sqft_lot15_log                  +
+bathrooms_ihs:sqft_lot_log:condition:grade                                  +
+bathrooms_ihs:sqft_lot_log:age:isRenovated                                  +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:floors_log                          +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:daten                               +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:ageRenovated                        +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:long                                +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:sqft_lot15_log                      +
+sqft_living_log:sqft_lot_log:age:isRenovated                                +
+sqft_living_log:sqft_lot_log:sqft_living15_log:sqft_lot15_log               +
+bedrooms_ihs:sqft_living_log:sqft_lot_log:floors_log                        +
+bedrooms_ihs:sqft_living_log:sqft_lot_log:sqft_above                        +
+bedrooms_ihs:sqft_living_log:sqft_lot_log:age                               +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:floors_log                       +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:grade                            +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:lat                              +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:long                             +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:daten:ageRenovated               +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:daten:age                           +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:daten:isRenovated                   +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:sqft_living15_log:sqft_lot15_log    +
+bedrooms_ihs:sqft_living_log:sqft_lot_log:age:ageRenovated                  +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:sqft_living15_log:sqft_lot15_log +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log:floors_log          +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log:age                 +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log:ageRenovated        +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log:daten:age           +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:daten:age:isRenovated:ageRenovated  +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log:age:isRenovated:age, data=df, na.action=na.exclude)
+
+mod3 <- lm(price_log~
+bedrooms_ihs                                                                +
+bathrooms_ihs                                                               +
+sqft_living_log                                                             +
+sqft_lot_log                                                                +
+floors_log                                                                  +
+sqft_above                                                                  +
+sqft_basement                                                               +
+condition                                                                   +
+grade                                                                       +
+waterfront                                                                  +
+hasView                                                                     +
+view                                                                        +
+daten                                                                       +
+age                                                                         +
+isRenovated                                                                 +
+ageRenovated                                                                +
+lat                                                                         +
+long                                                                        +
+sqft_living15_log                                                           +
+sqft_lot15_log                                                              +
+bedrooms_ihs:bathrooms_ihs                                                  +
+bathrooms_ihs:sqft_living_log                                               +
+bedrooms_ihs:sqft_lot_log                                                   +
+condition:grade                                                             +
+daten:age                                                                   +
+daten:isRenovated                                                           +
+age:isRenovated                                                             +
+bedrooms_ihs:floors_log                                                     +
+bedrooms_ihs:sqft_above                                                     +
+bedrooms_ihs:sqft_basement                                                  +
+bedrooms_ihs:age                                                            +
+bedrooms_ihs:long                                                           +
+bedrooms_ihs:sqft_living15_log                                              +
+bathrooms_ihs:floors_log                                                    +
+bathrooms_ihs:condition                                                     +
+bathrooms_ihs:hasView                                                       +
+bathrooms_ihs:age                                                           +
+bathrooms_ihs:isRenovated                                                   +
+bathrooms_ihs:lat                                                           +
+bathrooms_ihs:long                                                          +
+bathrooms_ihs:sqft_living15_log                                             +
+bathrooms_ihs:sqft_lot15_log                                                +
+sqft_living_log:long                                                        +
+sqft_lot_log:floors_log                                                     +
+sqft_lot_log:sqft_above                                                     +
+sqft_lot_log:sqft_basement                                                  +
+sqft_lot_log:condition                                                      +
+sqft_lot_log:grade                                                          +
+sqft_lot_log:waterfront                                                     +
+sqft_lot_log:hasView                                                        +
+sqft_lot_log:age                                                            +
+sqft_lot_log:isRenovated                                                    +
+sqft_lot_log:lat                                                            +
+sqft_lot_log:long                                                           +
+sqft_lot_log:sqft_lot15_log                                                 +
+daten:isRenovated:ageRenovated                                              +
+bedrooms_ihs:condition:grade                                                +
+bathrooms_ihs:daten:isRenovated                                             +
+bedrooms_ihs:bathrooms_ihs:condition                                        +
+bedrooms_ihs:bathrooms_ihs:age                                              +
+bedrooms_ihs:bathrooms_ihs:lat                                              +
+bedrooms_ihs:bathrooms_ihs:long                                             +
+bedrooms_ihs:sqft_living_log:long                                           +
+bathrooms_ihs:sqft_living_log:long                                          +
+bathrooms_ihs:sqft_living_log:sqft_lot15_log                                +
+bedrooms_ihs:sqft_lot_log:floors_log                                        +
+bedrooms_ihs:sqft_lot_log:condition                                         +
+bedrooms_ihs:sqft_lot_log:waterfront                                        +
+bedrooms_ihs:sqft_lot_log:age                                               +
+bathrooms_ihs:sqft_lot_log:grade                                            +
+bathrooms_ihs:sqft_lot_log:age                                              +
+bathrooms_ihs:sqft_lot_log:isRenovated                                      +
+sqft_living_log:sqft_lot_log:floors_log                                     +
+sqft_living_log:sqft_lot_log:sqft_basement                                  +
+sqft_living_log:sqft_lot_log:condition                                      +
+sqft_living_log:sqft_lot_log:isRenovated                                    +
+sqft_living_log:sqft_lot_log:lat                                            +
+sqft_living_log:sqft_lot_log:sqft_lot15_log                                 +
+bathrooms_ihs:sqft_lot_log:age:isRenovated                                  +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:sqft_lot15_log                      +
+bedrooms_ihs:sqft_living_log:sqft_lot_log:sqft_above                        +
+bedrooms_ihs:sqft_living_log:sqft_lot_log:age                               +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:lat                              +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:sqft_living15_log:sqft_lot15_log +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log:age                 +
+bedrooms_ihs:bathrooms_ihs:sqft_lot_log:daten:age:isRenovated:ageRenovated, data=df, na.action=na.exclude)
+
+mod4 <- lm(price_log~ 
+bedrooms_ihs                                                              +
+bathrooms_ihs                                                             +
+sqft_living_log                                                           +
+sqft_lot_log                                                              +
+floors_log                                                                +
+sqft_above                                                                +
+sqft_basement                                                             +
+condition                                                                 +
+grade                                                                     +
+waterfront                                                                +
+hasView                                                                   +
+view                                                                      +
+daten                                                                     +
+age                                                                       +
+isRenovated                                                               +
+ageRenovated                                                              +
+lat                                                                       +
+long                                                                      +
+sqft_living15_log                                                         +
+sqft_lot15_log                                                            +
+bedrooms_ihs:bathrooms_ihs                                                +
+bathrooms_ihs:sqft_living_log                                             +
+bedrooms_ihs:sqft_lot_log                                                 +
+condition:grade                                                           +
+daten:age                                                                 +
+daten:isRenovated                                                         +
+age:isRenovated                                                           +
+bedrooms_ihs:floors_log                                                   +
+bedrooms_ihs:sqft_above                                                   +
+bedrooms_ihs:sqft_basement                                                +
+bedrooms_ihs:age                                                          +
+bedrooms_ihs:long                                                         +
+bedrooms_ihs:sqft_living15_log                                            +
+bathrooms_ihs:floors_log                                                  +
+bathrooms_ihs:condition                                                   +
+bathrooms_ihs:hasView                                                     +
+bathrooms_ihs:age                                                         +
+bathrooms_ihs:isRenovated                                                 +
+bathrooms_ihs:lat                                                         +
+bathrooms_ihs:long                                                        +
+bathrooms_ihs:sqft_living15_log                                           +
+bathrooms_ihs:sqft_lot15_log                                              +
+sqft_living_log:long                                                      +
+sqft_lot_log:floors_log                                                   +
+sqft_lot_log:sqft_above                                                   +
+sqft_lot_log:sqft_basement                                                +
+sqft_lot_log:condition                                                    +
+sqft_lot_log:grade                                                        +
+sqft_lot_log:waterfront                                                   +
+sqft_lot_log:hasView                                                      +
+sqft_lot_log:age                                                          +
+sqft_lot_log:isRenovated                                                  +
+sqft_lot_log:lat                                                          +
+sqft_lot_log:long                                                         +
+sqft_lot_log:sqft_lot15_log                                               +
+daten:isRenovated:ageRenovated                                            +
+bedrooms_ihs:condition:grade                                              +
+bathrooms_ihs:daten:isRenovated                                           +
+bedrooms_ihs:bathrooms_ihs:condition                                      +
+bedrooms_ihs:bathrooms_ihs:age                                            +
+bedrooms_ihs:bathrooms_ihs:lat                                            +
+bedrooms_ihs:bathrooms_ihs:long                                           +
+bedrooms_ihs:sqft_living_log:long                                         +
+bathrooms_ihs:sqft_living_log:long                                        +
+bathrooms_ihs:sqft_living_log:sqft_lot15_log                              +
+bedrooms_ihs:sqft_lot_log:floors_log                                      +
+bedrooms_ihs:sqft_lot_log:condition                                       +
+bedrooms_ihs:sqft_lot_log:waterfront                                      +
+bedrooms_ihs:sqft_lot_log:age                                             +
+bathrooms_ihs:sqft_lot_log:grade                                          +
+bathrooms_ihs:sqft_lot_log:age:isRenovated                                +
+bathrooms_ihs:sqft_living_log:sqft_lot_log:lat                            +
+bedrooms_ihs:bathrooms_ihs:sqft_living_log:sqft_lot_log:age, data=df, na.action=na.exclude)
+bedrooms_ihs                                                                                                                                                 ─╯
+
+
+
+
+
+mod5 <- lm(price_log~
+bathrooms_ihs                                               +
+sqft_living_log                                             +
+sqft_lot_log                                                +
+isRenovated                                                 +
+bathrooms_ihs:sqft_living_log                               +
+bathrooms_ihs:sqft_living_log:long                          +
+bathrooms_ihs:long                                          +
+floors_log                                                  +
+condition                                                   +
+grade                                                       +
+waterfront                                                  +
+hasView                                                     +
+lat                                                         +
+long                                                        +
+sqft_living15_log                                           +
+sqft_lot15_log                                              +
+bedrooms_ihs:bathrooms_ihs                                  +
+daten:isRenovated                                           +
+bedrooms_ihs:floors_log                                     +
+bedrooms_ihs:long                                           +
+bathrooms_ihs:isRenovated                                   +
+bathrooms_ihs:lat                                           +
+bathrooms_ihs:long                                          +
+bathrooms_ihs:sqft_living15_log                             +
+sqft_lot_log:lat                                            +
+bathrooms_ihs:daten:isRenovated                             +
+bedrooms_ihs:bathrooms_ihs:lat                              +
+bedrooms_ihs:bathrooms_ihs:long                             +
+bathrooms_ihs:sqft_lot15_log                                +
+sqft_living_log:long                                        +
+bedrooms_ihs:sqft_living15_log                              +
+bathrooms_ihs:sqft_living_log:long,data=df, na.action=na.exclude)
+
+mod6 <- lm(price_log~
+bathrooms_ihs                                               +
+sqft_living_log                                             +
+sqft_lot_log                                                +
+isRenovated                                                 +
+bathrooms_ihs:sqft_living_log                               +
+floors_log                                                  +
+condition                                                   +
+grade                                                       +
+waterfront                                                  +
+hasView                                                     +
+lat                                                         +
+sqft_living15_log                                           +
+sqft_lot15_log                                              +
+bedrooms_ihs:bathrooms_ihs                                  +
+bedrooms_ihs:floors_log                                     +
+bathrooms_ihs:isRenovated                                   +
+bathrooms_ihs:sqft_living15_log                             +
+bathrooms_ihs:sqft_lot15_log,data=df, na.action=na.exclude)
+
+mod7 <- lm(price_log~ 
+	   bathrooms_ihs * 
+	   (sqft_living_log +
+	    bedrooms_ihs +
+	    isRenovated +
+	    sqft_living15_log +
+	    sqft_lot15_log)+ 
+	   bedrooms_ihs * floors_log + 
+	   condition + 
+	   grade + 
+	   waterfront + 
+	   hasView + 
+	   lat,
+   data=df, na.action=na.exclude)
+
+library(car)
+vif(mod7)
+
+
