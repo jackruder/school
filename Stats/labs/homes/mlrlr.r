@@ -69,6 +69,11 @@ res_x <- 1080
 res_y <- 1080
 
 mod <- lm(price_log ~ bedrooms_ihs * bathrooms_ihs * sqft_living_log * sqft_lot_log * (floors_log + sqft_above + sqft_basement + (condition*grade) + (waterfront * hasView * view) + (daten * age * isRenovated * ageRenovated) + (lat + long) + (sqft_living15_log * sqft_lot15_log)), na.action=na.exclude, data=df)
+par(mfrow=c(1,3))
+hist(mod$resid,main="Model Residuals", xlab="Residual")
+plot(mod$resid~mod$fitted,main="Model Residuals against Fitted Values", xlab="Model Fitted Values", ylab="Model Residuals")
+qqnorm(mod$resid)
+qqline(mod$resid)
 
 mod2 <- lm(price_log ~
 bedrooms_ihs                                                                +
@@ -427,7 +432,7 @@ sqft_lot_log:lat                                            +
 bathrooms_ihs:daten:isRenovated                             +
 bedrooms_ihs:bathrooms_ihs:lat                              +
 bedrooms_ihs:bathrooms_ihs:long                             +
-bathrooms_ihs:sqft_lot15_log                                +
+bathrooms_ihs:sqft_lo7t15_log                                +
 sqft_living_log:long                                        +
 bedrooms_ihs:sqft_living15_log                              +
 bathrooms_ihs:sqft_living_log:long,data=df, na.action=na.exclude)
@@ -464,10 +469,18 @@ mod7 <- lm(price_log~
 	   grade + 
 	   waterfront + 
 	   hasView + 
-	   lat,
-   data=df, na.action=na.exclude)
+	   lat, data=df, na.action=na.exclude)
+summary(mod7)
 
 library(car)
 vif(mod7)
+png("check.png", width=1440, height=420)
+par(mfrow=c(1,3))
+hist(mod7$resid,main="Model Residuals", xlab="Residual")
+plot(mod7$resid~mod7$fitted,main="Model Residuals against Fitted Values", xlab="Model Fitted Values", ylab="Model Residuals")
+qqnorm(mod7$resid)
+qqline(mod7$resid)
+dev.off()
 
-
+nD <- data.frame(bathrooms_ihs=ihs(c(2)),sqft_living_log=log(c(1450)), bedrooms_ihs=ihs(c(3)), isRenovated=c(0),sqft_living15_log=log(c(1576)),sqft_lot15_log=log(c(9600)),floors_log=log(c(3)),condition=c(3),grade=c(8),waterfront=c(0),hasView=c(1),lat=c(47.5102))
+predict(mod7, newdata=nD, int="prediction")

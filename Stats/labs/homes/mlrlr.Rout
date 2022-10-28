@@ -1,0 +1,93 @@
+
+R version 4.2.1 (2022-06-23) -- "Funny-Looking Kid"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ################
+> # Author: Jack Ruder
+> # Date: Oct 06, 2022
+> # Multiple Linear Regression Lab report III
+> ###############################
+> DATADIR <- "~/School/Stats/data"
+> FILENAME <- "kc_house_data.csv"
+> SEP <- "/" # posix
+> 
+> DATAFILE <- paste(DATADIR, FILENAME, sep=SEP)
+> df <- read.csv(DATAFILE)
+> 
+> #convert YYYYMMDD to years since 2014
+> parseDate <- function(x) {
++ 	yr <- strtoi(substr(x, 1,4), base=10L)
++ 	month <- strtoi(substr(x, 5,6), base=10L)
++ 	d <- strtoi(substr(x, 7,8), base=10L)
++ 	return (yr - 2014 + (month / 12.0) + (d/365.0))
++ }
+> 
+> notZero <- function(x){ # 0 if 0, 1 if not zero
++ 	return (ifelse(x==0,0,1))
++ }
+> 
+> incZero <- function(x, e) { # add a tiny value of e to only zero values
++ 	return (ifelse(x==0,e,x))
++ }
+> 
+> df$date <- parseDate(df$date) ## make date numeric
+> names(df)[names(df)=="date"] <- "daten"
+> df$hasView <- notZero(df$view) # create binary indicator of whether or not a view is present
+> df$isRenovated <- notZero(df$yr_renovated)
+> df$age <- df$daten + 2014 - df$yr_built
+> df$ageRenovated <- df$daten + 2014 - df$yr_renovated
+> 
+> logDf <- sapply(df, log) # log all data
+Warning messages:
+1: In FUN(X[[i]], ...) : NaNs produced
+2: In FUN(X[[i]], ...) : NaNs produced
+3: In FUN(X[[i]], ...) : NaNs produced
+> colnames(logDf) <- paste0(colnames(df), "_log")
+> 
+> ihs <- function(x) log(x + sqrt(1 + x^2))
+> ihsDf <- sapply(df, ihs) # ihs all data
+> colnames(ihsDf) <- paste0(colnames(df), "_ihs")
+> 
+> df <- cbind(df,logDf,ihsDf) # combine into one dataframe
+> 
+> 
+> 
+> plot.lm <- function(x, y, xlab, ylab) {
++ 	par(mfrow=c(2,2))
++ 	plot(x, y, xlab=xlab, ylab=ylab)
++ 	model <- lm(y~x)
++ 	abline(model)
++ 	summary(model)
++ 
++ 	#diagnostic plots
++ 	plot(model$fitted, model$resid, xlab="Fitted Values", ylab="Residuals")
++ 	hist(model$resid, xlab="Residuals", main="Residual Distribution")
++ 	# Slight left skew in the residuals
++ 	qqnorm(model$reqid)
++ 	qqline(model$resid)
++ }
+> 
+> plotdensity  <- function(col, data, colName) {
++ 	pname <-paste("Density Plot of",colName,sep=" ")
++ 	lattice::densityplot(~col, data=data, main=pname, xlab=colName)
++ }
+> 
+> RES_X <- 1080
+> RES_Y <- 1080
+> 
+> mod <- lm(price_log ~ bedrooms_ihs * bathrooms_ihs * sqft_living_log * sqft_lot_log * (floors_log + sqft_above + sqft_basement + (condition*grade)) * (waterfront + hasView + view) * (daten + age + isRenovated + ageRenovated) * (lat + long) * (sqft_living15_log * sqft_lot15_log), data=df)

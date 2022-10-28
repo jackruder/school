@@ -1,0 +1,74 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{amsmath, amssymb, amsthm}
+
+\usepackage{setspace}
+\usepackage{tikz}
+
+\usetikzlibrary{automata, arrows, chains}
+\tikzset{
+	>=stealth, % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+	in place/.style={
+		auto=false,
+		inner sep=3pt,
+	},
+}
+
+% figure support
+\usepackage{import}
+\usepackage{xifthen}
+\pdfminorversion=7
+\usepackage{pdfpages}
+\usepackage{transparent}
+\newcommand{\incfig}[1]{%
+	\def\svgwidth{\columnwidth}
+	\import{./figures/}{#1.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\title{ANOVA Warmup}
+\date{Oct 14, 2022}
+\author{Jack Ruder}
+
+
+\begin{document}
+
+\doublespacing
+\maketitle
+
+\section*{5.1}
+True
+\section*{5.15}%
+\label{sec:5.15}
+\subsection*{a}%
+\label{sub:a}
+Response is the Final exam score. Explanatory is the font used.
+\subsection*{b}%
+\label{sub:b}
+This is a randomized experiment, since fonts were assigned at random, by the teacher.
+\subsection*{c}%
+\label{sub:c}
+The students in the class were not cherry-picked for the experiment, so an analysis of covariance should be fine.
+
+\section*{5.17}%
+\label{sec:5.17}
+\subsection*{a}
+The units in this experiment are the students.
+\subsection*{b}%
+\label{sub:b}
+The treatment is which font is assigned.
+\subsection*{c}%
+Each of the 40 fonts should be assigned to the same number of students.
+\label{sub:c}
+
+
+
+
+\end{document}
