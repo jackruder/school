@@ -1,3 +1,8 @@
+
+#########IMGS#########
+*.png
+*.jpg
+
 ############# JAVA ############
 # Compiled class file
 *.class
