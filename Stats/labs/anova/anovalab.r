@@ -38,7 +38,8 @@ dev.off()
 
 gMeans <- tapply(df$Sales, df$Sector, mean)
 gSd <- tapply(df$Sales, df$Sector, sd)
-plot(gSd~gMeans) # slope of 1, we should in fact use log
+lm(log(gSd)~log(gMeans))
+plot(log(gSd)~log(gMeans)) # slope of 1, we should in fact use log
 
 (an <- aov(log(Sales)~Sector, data=df))
 anova(an) # extremely significant, <2.2e^{-16}
@@ -49,4 +50,6 @@ plot(an,2) # tails are subpar, especially for higher values.
 # we see normality in the residuals.
 
 TukeyHSD(an)
+
+gEffects <- mean(df$Sales) - gMeans
 
