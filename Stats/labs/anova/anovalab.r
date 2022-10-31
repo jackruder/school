@@ -1,4 +1,5 @@
-DATAFILE  <- "../../data/ForbesTop2000-2017.csv"
+#DATAFILE  <- "../../data/ForbesTop2000-2017.csv"
+DATAFILE <- "~/Desktop/ForbesTop2000-2017.csv"
 df <- read.csv(DATAFILE)
 
 unique(df$Sector)
@@ -39,7 +40,7 @@ dev.off()
 gMeans <- tapply(df$Sales, df$Sector, mean)
 gSd <- tapply(df$Sales, df$Sector, sd)
 lm(log(gSd)~log(gMeans))
-plot(log(gSd)~log(gMeans)) # slope of 1, we should in fact use log
+plot(log(gSd)~log(gMeans), xlab='log group means', ylab = 'log group standard deviation') # slope of 1, we should in fact use log
 
 (an <- aov(log(Sales)~Sector, data=df))
 anova(an) # extremely significant, <2.2e^{-16}
