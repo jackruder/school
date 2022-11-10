@@ -35,6 +35,15 @@ ggplot(data=df, aes(x=log(Sales), group=Sector, fill=Sector)) +
 	)
 dev.off()
 
+# Figure out what transformation we should use
+gMeans <- tapply(df$Sales, df$Sector, mean)
+gSd <- tapply(df$Sales, df$Sector, sd)
+lm(log(gSd)~log(gMeans)) # slope 1.01
+
+png("transformCheck.png", width=8, height=8, units="in", res=150)
+plot(log(gSd)~log(gMeans), xlab='Log Group Means', ylab = 'Log Group Standard Deviation') # slope of 1, we should in fact use log
+dev.off()
+
 # make a violin plot of untransformed data 
 png("violin.png", width=16, height=8, units="in", res=350)
 ggplot(df, aes(x=Sector, y=Sales, fill=Sector)) + 
@@ -46,14 +55,6 @@ dev.off()
 # Financials, "" might have lower means, since their peaks are slightlry shifted to the left of the other distributions.  But the rest don't show any huge differences.
 
 
-# Figure out what transformation we should use
-gMeans <- tapply(df$Sales, df$Sector, mean)
-gSd <- tapply(df$Sales, df$Sector, sd)
-lm(log(gSd)~log(gMeans)) # slope 1.01
-
-png("transformCheck.png", width=8, height=8, units="in", res=150)
-plot(log(gSd)~log(gMeans), xlab='Log Group Means', ylab = 'Log Group Standard Deviation') # slope of 1, we should in fact use log
-dev.off()
 
 # run an anova 
 (an <- aov(log(Sales)~Sector, data=df))
@@ -70,7 +71,7 @@ dev.off()
 TukeyHSD(an)
 
 # get group effects and residuals
-grand <- mean(log(df$Sales))
+logGrand <- mean(log(df$Sales))
 df <- df %>% 
     group_by(Sector) %>%
 	mutate(
@@ -87,7 +88,7 @@ library(knitr)
 # print the group effects
 (gEffects <- tapply(df$Effect, df$Sector, mean))
 
-#kable(data.frame(gEffects), "latex")
+kable(data.frame(gEffects), "latex")
 
 ## now check the residuals
 png("residualsGroupNormality.png", width=8, height=8, units="in", res=150)
