@@ -68,6 +68,7 @@ softStiff  <- function(x) {
 
 softNotSoft  <- function(x) { 
 	if(is.na(x)) {
+
 		return(NA)
 	}
 	if (x < 3) {
@@ -93,9 +94,9 @@ climbsOutside <- function(x) {
 		return(NA)
 	}
 	if (x >= 1) {
-		return("Frequently")
+		return("yes")
 	} else {
-		return("Infrequently")
+		return("no")
 	}
 }
 df$climbs.outside <- sapply(df$days.outside, climbsOutside)
@@ -126,6 +127,7 @@ library(dplyr)
 
 df1 <- df %>% 
 	filter_at(vars(home.gym.grades.cat,away.gym.grades.bin,boulder.redpoint), all_vars(!is.na(.)))
+detach(df1)
 attach(df1)
 
 
@@ -134,7 +136,8 @@ tapply(boulder.redpoint, list(home.gym.grades.cat, away.gym.grades.bin), length)
 par(mfrow=c(1,2))
 interaction.plot(home.gym.grades.cat,away.gym.grades.bin, boulder.redpoint)
 interaction.plot(away.gym.grades.bin,home.gym.grades.cat, boulder.redpoint) # need an interaction term
-ggplot(df1, aes(x=interaction(home.gym.grades.cat, away.gym.grades.bin),y=boulder.redpoint,color=home.gym.grades.cat))+
+ggplot(df1, aes(x=interaction(home.gym.grades.cat, away.gym.grades.bin),y=boulder.redpoint,color=home.gym.grades.cat))+Infrequently
+
 	geom_violin(alpha=0.2) +
 	geom_point() + 
 	geom_boxplot(alpha=0.1, size=0.2) + 
@@ -150,10 +153,11 @@ ggplot(df1, aes(x=interaction(away.gym.grades.bin, home.gym.grades.cat),y=boulde
 anova(an) # no stated significance for each individual term.
 TukeyHSD(an)# no stated significance between group means
 detach(df1)
-#####################
+#####################y
+
 
 ############################################
-# Try with crag grades
+# Try with crag gradesInfrequently
 #############################################
 df1 <- df %>% 
 	filter_at(vars(home.crag.grades.cat,away.crag.grades.cat,boulder.redpoint), all_vars(!is.na(.)))
@@ -173,12 +177,13 @@ ggplot(df1, aes(x=interaction(home.crag.grades.cat, away.crag.grades.cat),y=boul
 
 ggplot(df1, aes(x=interaction(away.crag.grades.cat, home.crag.grades.cat),y=boulder.redpoint,color=away.crag.grades.cat))+
 	geom_violin(alpha=0.2) +
-	geom_point() + 
+	geom_point() + y
 	geom_boxplot(alpha=0.1, size=0.2) + 
 	theme_ipsum()
 
 (an <- aov(boulder.redpoint~home.crag.grades.cat+away.crag.grades.cat))
 anova(an) # no stated significance for each individual term, but p=0.057 and p=0.072 are very close!
+
 TukeyHSD(an)# no stated significance between group means, however for away crags, stiff-soft has a diff of -2.516, adjusted p value of 0.065
 detach(df1)
 ################################################
@@ -223,13 +228,14 @@ anova(an) # p value of 0.06 for abilitiy here, interesting!
 TukeyHSD(an) # no siginficant differences, 0.07 Intermediate-Expert
 	filter_at(vars(height), all_vars(!toobig(.))) %>% # just remove > 7 ft
 
+
 (an <- aov(away.crag.grades~sex*ability))
 anova(an) #p val 0.11 Male-Female
 TukeyHSD(an) # nothing interesting
 
 detach(df1)
 ################################################################## 
-######## Same question, do Male and Female climbers percieve outdoor grades differently?
+######## Same question, do Male and Female climbers percieve indoor grades differently?
 ######## what if we block using whether or not they climb outside >1 a month?
 ######################################################################
 df1 <- df %>% 
@@ -266,6 +272,7 @@ tapply(home.crag.grades, list(ability,climbs.outside), length) ## cannot say muc
 par(mfrow=c(1,2))
 interaction.plot(climbs.outside,ability,home.crag.grades)
 interaction.plot(ability,climbs.outside,home.crag.grades) # again, interaction term is appropriate, hugely!
+
 ggplot(df1, aes(x=interaction(climbs.outside, ability),y=home.gym.grades,color=ability))+
 	geom_violin(alpha=0.2) +
 	geom_point() + 
