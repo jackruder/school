@@ -1,12 +1,16 @@
 ################
+## Quick and Dirty R script
+## to explore potential questions that might be asked of the climbing survey
+#####
+#### Author: Jack Ruder
 
 
-FILE <- "./climbing.csv"
-df <- read.csv(FILE)
+FILE <- "./climbing.csv" ## lock and load
+df <- read.csv(FILE) ## fire
 
 label <- c('time.response','boulder.flash', 'boulder.redpoint', 'lead.onsight', 'lead.flash', 'lead.redpoint', 'height', 'weight', 'age', 'sex', 'years.climbing', 'pull.max', 'fingers.max2', 'fingers.max1', 'days.inside', 'days.outside', 'days.hangboard', 'days.collagen', 'days.protein', 'healthy', 'alcohol', 'thc', 'home.gym.grades', 'away.gym.grades', 'home.crag.grades', 'away.crag.grades', 'finger.injury.6', 'finger.injury.24')
 
-names(df) <- label
+names(df) <- label ### relabel for now, additional questions will require renaming this
 
 
 # parse data
@@ -93,7 +97,7 @@ climbsOutside <- function(x) {
 	if (is.na(x)) {
 		return(NA)
 	}
-	if (x >= 1) {
+	if (x >= 1) { ## spikes over 0,1,4, likely not at all, once a month, once a week
 		return("yes")
 	} else {
 		return("no")
