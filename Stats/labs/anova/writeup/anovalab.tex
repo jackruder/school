@@ -1,0 +1,157 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{float}
+
+\usepackage{setspace}
+\usepackage{tikz}
+
+\usetikzlibrary{automata, arrows, chains}
+\tikzset{
+	>=stealth, % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+	in place/.style={
+		auto=false,
+		inner sep=3pt,
+	},
+}
+
+% figure support
+\usepackage{import}
+\usepackage{xifthen}
+\pdfminorversion=7
+\usepackage{pdfpages}
+\usepackage{transparent}
+\newcommand{\incfig}[1]{%
+	\def\svgwidth{\columnwidth}
+	\import{./figures/}{#1.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\title{Anova Lab Report}
+\date{Oct 30, 2022}
+\author{Jack Ruder and Tatum Bunnett}
+
+
+\begin{document}
+
+\doublespacing
+\maketitle
+
+\section{Introduction}
+Our report uses data from the top 2000 companies in the Global 2000 list of 2017 from Forbes.com. The dataset includes information about the 2000 companies, such as the company's country, industry, sales, profits, assets, market value, and sector. This report uses the above data to determine if there is a difference in sales between the multiple sectors. Our report will discuss our analysis and provide our conclusions as well.
+\section{Analysis}%
+\label{sec:Analysis}
+To begin determine if there is a difference in sales between the multiple sectors we first needed explored our data through density plots.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../densitiesog.png}
+	\caption{Densities per Sector}
+	\label{fig:densityplots}
+\end{figure}
+The plots in Figure \ref{fig:densityplots} showed that our data was heavily right skewed for all groups, indicating the need for a transformation.
+
+We may check the needed transformation by plotting the log of the group standard deviations versus the log of the group means.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../transformCheck.png}
+	\caption{Group Standard Deviations against Means}
+	\label{fig:transformcheck}
+\end{figure}
+In Figure \ref{fig:transformcheck}, the observed slope of 1.01 indicates that we should transform our Sales response variable using a log transform.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../densities.png}
+	\caption{Log Transformed Sales per Sector}
+	\label{fig:densitiestr}
+\end{figure}
+
+The adjusted densities in Figure \ref{fig:densitiestr} show a shift towards a normal distribution in each sector as desired. At this stage, it is worth pointing out a sector labeled Unknown, this represents the data where there was no entry for the sector column. We will continue to refer to the sector as Unknown, refraining from interpereting meaning until it becomes apparent. \\
+
+It appears that the Unknown sector and Financials sectors have peaks in their densities ever-so-slightly shifted from the rest. This is made apparent in Figure \ref{fig:violin},
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../violin.png}
+	\caption{Violin/Box Plot of Untransformed Sales}
+	\label{fig:violin}
+\end{figure}
+
+where it is clear that the distributions are quite different, shifted towards fewer sales. 
+
+To test this hypothesis, we run a One-Way Anova using R to determine if there is a significant difference between sector sales. On running a One-Way Anova, we recieve an F value of 27.868 and a \(p\)-value of \(<2.2e^{-16}\), indicating that we may accept the alternate hypothesis that there exists a difference in Sales between groups. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../grandConditionsCheck.png}
+	\caption{Conditions for Inference}
+	\label{fig:grandCondies}
+\end{figure} 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{../residualsDensity.png
+	}
+	\caption{Density Plot of Group Residuals}
+	\label{fig:groupRes}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.6\textwidth]{../residualsGroupNormality.png}
+	\caption{QQ plot by Group}
+	\label{fig:QQ-plot-by-Group}
+\end{figure}
+In chekcing conditions for inference, we check Figure \ref{fig:grandCondies},
+and confirm that the residuals are random, independent, and normally distributed. 
+In Figures \ref{fig:groupRes} and \ref{fig:QQ-plot-by-Group}, we see that the residuals within groups have the same variability as well as appearing normal. 
+
+A TukeyHSD test shows that the only significant differences between group means lie with either Unknown or Financial sectors. That is, every adjusted \(p \)-value for a difference containing either of those two groups is less than \(0.05\). The adjusted \(p\)-value between Unknown and Financials is 0.0035, indicating a significant difference between these two groups. Thus, there are three categories of sectors in terms of sales: Unknown, Financials, and the rest.
+
+With a grand mean of \$8.52 billion, the group effects (in billions of dollars) are 
+
+\begin{figure}[H]
+\centering
+\begin{tabular}{l|r}
+\hline
+  & Group Effects, \% change\\
+\hline
+Consumer Discretionary & 152\\
+\hline
+Consumer Staples & 154\\
+\hline
+Energy & 155\\
+\hline
+Financials & 66\\
+\hline
+Health Care & 141\\
+\hline
+Industrials & 150\\
+\hline
+Information Technology & 124\\
+\hline
+Materials & 113\\
+\hline
+Telecommunication Services & 163\\
+\hline
+Unknown & 45\\
+\hline
+Utilities & 103\\
+\hline
+\end{tabular}
+\end{figure}.
+
+
+
+\section{Conclusion}%
+\label{sec:Conclusion}
+In our analysis we determined that there is a significant difference in sales between the different sectors, specifically the financials sector, unknown sector, and the rest. The financials sector posts 66\% of the average sales figures, the unknown sector posts 45\% of the average sales figures. Likely, this implies that the unknown sector consists of smaller-cap, non-traditional companies who are not as focused on sales. Within the rest of the groups there are not any significant enough differences to claim fundamentally different behavior. As this is purely an observational study we cannot use these results to infer any causation, nor should we extrapolate these figures to any smaller comanies since this is cherrypicked data from Forbes. But, it might be useful in understanding how different sectors among the most successful buisnesses rely on sales for recognition.
+\end{document}

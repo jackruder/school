@@ -1,0 +1,19 @@
+\begin{tabular}{l|r|r|r|r}
+\hline
+  & sex.climbs.outside.diff & sex.climbs.outside.lwr & sex.climbs.outside.upr & sex.climbs.ou
+tside.p.adj\\
+\hline
+Male:frequently-Female:frequently & 0.1750000 & 0.0509846 & 0.2990154 & 0.0019430\\
+\hline
+Female:infrequently-Female:frequently & 0.0333333 & -0.0581816 & 0.1248483 & 0.7793858\\
+\hline
+Male:infrequently-Female:frequently & 0.0388889 & -0.0727808 & 0.1505586 & 0.8018471\\
+\hline
+Female:infrequently-Male:frequently & -0.1416667 & -0.2439083 & -0.0394251 & 0.0024442\\
+\hline
+Male:infrequently-Male:frequently & -0.1361111 & -0.2567281 & -0.0154941 & 0.0201990\\
+\hline
+Male:infrequently-Female:infrequently & 0.0055556 & -0.0812986 & 0.0924097 & 0.9983553\\
+\hline
+\end{tabular}
+

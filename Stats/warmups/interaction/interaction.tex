@@ -1,0 +1,72 @@
+\documentclass[a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{amsmath, amssymb, amsthm}
+
+\usepackage{setspace}
+\usepackage{tikz}
+
+\usetikzlibrary{automata, arrows, chains}
+\tikzset{
+	>=stealth, % makes the arrow heads bold
+	node distance=3cm, % specifies the minimum distance between two nodes. Change if necessary.
+	every state/.style={thick, fill=gray!10}, % sets the properties for each ’state’ node
+	initial text=$ $, % sets the text that appears on the start arrow
+	in place/.style={
+		auto=false,
+		inner sep=3pt,
+	},
+}
+
+% figure support
+\usepackage{import}
+\usepackage{xifthen}
+\pdfminorversion=7
+\usepackage{pdfpages}
+\usepackage{transparent}
+\newcommand{\incfig}[1]{%
+	\def\svgwidth{\columnwidth}
+	\import{./figures/}{#1.pdf_tex}
+}
+
+\pdfsuppresswarningpagegroup=1
+
+\title{Warm-Up: Interaction}
+\date{Nov 06, 2022}
+\author{Jack Ruder}
+
+
+\begin{document}
+
+\doublespacing
+\maketitle
+
+\section*{7.19}%
+\label{sec:7.19}
+Comparison, Replication, Crossing and Randomization are all met, but there is not any blocking.
+
+\section*{7.21}
+Here, we observe that there is a pronounced interaction between the fortifications, with a change in means. We also see that there is a possibly smaller standard deviation in cases with ZnLow, suggesting a transformation should be explored. 
+
+\section*{7.23}%
+\label{sec:7.23}
+Yes the plot shows that there is an interaction.
+
+\section*{7.27}
+
+\subsection*{a}
+Firstly, there is no randomization within Male/Female servers, since there is only 1 of each. This is a problem because only the assignment  of smiley faces is randomized; the experiment should be dependent on random assignment of a Male/Female server.
+
+\subsection*{b}
+ One degree of freedom for Male/Female, 0 for the differences between servers, and 0 for the interaction.
+
+ \subsection*{c}%
+ \label{sub:c}
+If we are to do a Two-Way analysis there needs to be multiple Male/Female servers to explain unit to unit block variation. The analysis incorrectly assumes this variation which cannot exist with a single server.
+
+\subsection*{d}
+For each of the 6 servers, make six groups of tables. For each server, randomly assign smiley faces to half of their tables, and record the resulting tips.
+
+\end{document}

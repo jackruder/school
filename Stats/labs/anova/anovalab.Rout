@@ -1,0 +1,48 @@
+
+R version 4.2.1 (2022-06-23) -- "Funny-Looking Kid"
+Copyright (C) 2022 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> DATAFILE  <- "../../data/ForbesTop2000-2017.csv"
+> df <- read.csv(DATAFILE)
+> 
+> unique(df$Sector)
+ [1] "Financials"                 "Information Technology"    
+ [3] "Consumer Discretionary"     "Telecommunication Services"
+ [5] "Energy"                     "Industrials"               
+ [7] "Health Care"                "Consumer Staples"          
+ [9] "Materials"                  "Utilities"                 
+[11] ""                          
+> df[df==""] <- "Unknown"
+> 
+> library(ggplot2)
+> library(hrbrthemes)
+NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use these themes.
+      Please use hrbrthemes::import_roboto_condensed() to install Roboto Condensed and
+      if Arial Narrow is not on your system, please see https://bit.ly/arialnarrow
+> library(viridis)
+Loading required package: viridisLite
+> 
+> #png("densitiesog.png", width=8, height=8, units="in", res=150)
+> ggplot(data=df, aes(x=Sales, group=Sector, fill=Sector)) +
++ 	geom_density(adjust=1.5, alpha=.4) +
++     	theme_ipsum()
+Error in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y,  : 
+  invalid font type
+Calls: <Anonymous> ... drawDetails -> drawDetails.text -> grid.Call.graphics
+In addition: There were 50 or more warnings (use warnings() to see the first 50)
+Execution halted
