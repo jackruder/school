@@ -1,9 +1,8 @@
 #######
 library(knitr)
 library(ggplot2)
-library(hrbrthemes)
-library(viridis)
-library(svglite)
+#library(hrbrthemes)
+#library(viridis)
 library(dplyr)
 
 FILE <- "~/School/Stats/data/babes2.csv"
@@ -28,14 +27,14 @@ ggplot(babes, aes(x=interaction(inc.envmt,egg.trmt),y=HatchBmass,color=inc.envmt
 	geom_violin(alpha=0.2) +
 	geom_point() + 
 	geom_boxplot(alpha=0.1, size=0.2) + 
-	theme_ipsum()
+\	theme_ipsum()
 dev.off()
 png("bp2.png",width=8,height=6, units='in', res=150)
 ggplot(babes, aes(x=interaction(egg.trmt, inc.envmt),y=HatchBmass, color=egg.trmt))+
 	geom_violin(alpha=0.2) +
 	geom_point() + 
 	geom_boxplot(alpha=0.1, size=0.2) + 
-	theme_ipsum()e
+	theme_ipsum()
 dev.off()
 
 
@@ -43,11 +42,12 @@ dev.off()
 ###########################
 # non-transformed analysis
 ###########################
+means <- tapply(HatchBmass, list(inc.envmt,egg.trmt), mean) ## 
 (grand <- mean(HatchBmass))
 (trmtEffect <- tapply(HatchBmass, egg.trmt, mean) - grand)
 (envmtEffect <- tapply(HatchBmass, inc.envmt, mean) - grand)
-(interaction = (means - rbind(outdoorEffect,outdoorEffect)
-                - cbind(sexEffect,sexEffect) - grand))
+(interaction = (means - cbind(trmtEffect,trmtEffect)
+                - cbind(envmtEffect,envmtEffect) - grand))
 (an <- aov(HatchBmass~egg.trmt*inc.envmt)) ##
 babes <- babes %>%
 	group_by(egg.trmt) %>%
