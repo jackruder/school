@@ -13,13 +13,13 @@ head(babes)
 attach(babes)
 
 (cellCt <- tapply(HatchBmass, list(egg.trmt, inc.envmt), length)) # not balanced
-#kable(data.frame(cellCt), "latex")
+kable(data.frame(cellCt), "latex")
 
-#png("int.png",width=8,height=6, units='in', res=150)
+png("int.png",width=8,height=6, units='in', res=150)
 par(mfrow=c(1,2))
 interaction.plot(inc.envmt,as.factor(egg.trmt),HatchBmass)
 interaction.plot(egg.trmt,as.factor(inc.envmt),HatchBmass)
-#dev.off()
+dev.off()
 #mostly parallel, but not perfect
 
 png("bp1.png",width=8,height=6, units='in', res=150)
@@ -27,7 +27,7 @@ ggplot(babes, aes(x=interaction(inc.envmt,egg.trmt),y=HatchBmass,color=inc.envmt
 	geom_violin(alpha=0.2) +
 	geom_point() + 
 	geom_boxplot(alpha=0.1, size=0.2) + 
-\	theme_ipsum()
+	theme_ipsum()
 dev.off()
 png("bp2.png",width=8,height=6, units='in', res=150)
 ggplot(babes, aes(x=interaction(egg.trmt, inc.envmt),y=HatchBmass, color=egg.trmt))+
@@ -83,6 +83,7 @@ abline((a <- lm(log(cellSD)~log(cellM))))
 dev.off()
 summary(a) # slope 1.162, looks good
 ##################
-sdErr <- anova(an)[3,3]
+sdErr <- anova(an)[4,3]
 (trmtEffectSize <- TukeyHSD(an)$egg.trmt[1] / sdErr)
 (envrEffectSize <- TukeyHSD(an)$inc.envmt[1] / sdErr)
+(interactionEffectSize <- TukeyHSD(an)$'egg.trmt:inc.envmt'[,1] / sdErr)
